@@ -16,7 +16,7 @@
  */
 import {createContext, useContext, useState, useEffect} from 'react'
 import {auth} from './firebase'
-import { onAuthStateChanged as firebaseOnAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged as firebaseOnAuthStateChanged, signOut as authSignOut} from 'firebase/auth';
 
 const AuthUserContext = createContext({
   authUser: null,
@@ -27,11 +27,15 @@ export default function useFireBaseAuth() {
   const [authUser, setAuthUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const clear = () => {
+    setAuthUser(null);
+    setIsLoading(false);
+  }
+
   const handleAuthStateChanged = async (user) => {
     setIsLoading(true);
     if (!user) {
-      setAuthUser(null);
-      setIsLoading(false);
+      clear();
       return;
     }
     setAuthUser({
@@ -41,6 +45,8 @@ export default function useFireBaseAuth() {
     setIsLoading(false);
   };
 
+  const signOut = () => authSignOut(auth).then(clear);
+
   useEffect(() => {
     const unsubscribe = firebaseOnAuthStateChanged(auth, handleAuthStateChanged);
     return () => unsubscribe();
@@ -48,7 +54,8 @@ export default function useFireBaseAuth() {
 
   return {
     authUser,
-    isLoading
+    isLoading,
+    signOut
   }
 }
 
