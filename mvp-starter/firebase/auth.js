@@ -16,7 +16,7 @@
  */
 import {createContext, useContext, useState, useEffect} from 'react'
 import {auth} from './firebase'
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged as firebaseOnAuthStateChanged } from 'firebase/auth';
 
 const AuthUserContext = createContext({
   authUser: null,
@@ -27,22 +27,22 @@ export default function useFireBaseAuth() {
   const [authUser, setAuthUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const onAuthStateChanged = async (user) => {
+  const handleAuthStateChanged = async (user) => {
     setIsLoading(true);
-    if(!user) {
+    if (!user) {
       setAuthUser(null);
       setIsLoading(false);
       return;
     }
     setAuthUser({
       uid: user.uid,
-      email: user.email
+      email: user.email,
     });
     setIsLoading(false);
-  }
+  };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, onAuthStateChanged);
+    const unsubscribe = firebaseOnAuthStateChanged(auth, handleAuthStateChanged);
     return () => unsubscribe();
   }, [])
 
