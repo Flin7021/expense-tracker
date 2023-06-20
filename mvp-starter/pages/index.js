@@ -42,7 +42,6 @@ export default function Home() {
     );
   }
 
-  // Function to create a new user with email and password
   const signUpWithEmailAndPassword = async (email, password) => {
     try {
       // Create user in Firebase Authentication
@@ -55,15 +54,12 @@ export default function Home() {
       const userRef = firestore.collection('users').doc(userId);
       const userData = {
         email: userCredential.user.email,
-        favoriteFlashcards: [],
+        flashcards: [],
       };
       await userRef.set(userData);
 
-      // Log the user data in the console (optional)
-      console.log('New user data:', userData);
-
       // Redirect to the dashboard or perform other actions
-      router.push('/dashboard');
+      // router.push('/dashboard');
     } catch (error) {
       console.error('Error signing up:', error);
       // Handle the error

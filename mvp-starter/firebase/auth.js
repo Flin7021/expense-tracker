@@ -53,29 +53,6 @@ export default function useFireBaseAuth() {
 
   const signOut = () => authSignOut(auth).then(clear);
 
-  const signUpWithEmailAndPassword = async (email, password) => {
-    try {
-      // Create user in Firebase Authentication
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-      // Get the user's unique ID
-      const userId = userCredential.user.uid;
-
-      // Create a new user document in Firestore
-      const userRef = firestore.collection('users').doc(userId);
-      const userData = {
-        email: userCredential.user.email,
-        flashcards: [],
-      };
-      await userRef.set(userData);
-
-      // Redirect to the dashboard or perform other actions
-      // router.push('/dashboard');
-    } catch (error) {
-      console.error('Error signing up:', error);
-      // Handle the error
-    }
-  };
 
   useEffect(() => {
     const unsubscribe = firebaseOnAuthStateChanged(auth, handleAuthStateChanged);
@@ -86,7 +63,6 @@ export default function useFireBaseAuth() {
     authUser,
     isLoading,
     signOut,
-    signUpWithEmailAndPassword,
   };
 }
 
