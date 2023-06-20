@@ -1,0 +1,22 @@
+.flashcardsPage {
+    padding: 20px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .flashcardsContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as desired */
+    gap: 16px;
+  }
+
+  /* Additional styles for individual flashcards */
+  .flashcard {
+    padding: 12px;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
