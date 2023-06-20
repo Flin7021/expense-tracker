@@ -29,7 +29,7 @@ const REDIRECT_PAGE = '/dashboard';
 
 // Configure FirebaseUI
 const uiConfig = {
-  signInFlow: 'redirect',
+  signInFlow: 'popup',
   signInSuccessUrl: REDIRECT_PAGE,
   signInOptions: [
     EmailAuthProvider.PROVIDER_ID,
@@ -68,11 +68,11 @@ export default function Home() {
         <Container className={styles.container}>
           <Typography variant="h1">Welcome to Expense Tracker!</Typography>
           <Typography variant="h2">Add, view, edit, and delete expenses</Typography>
-          {/* <div className={styles.buttons}>
+          <div className={styles.buttons}>
             <Button variant="contained" color="secondary" onClick={() => setLogin(true)}>
               Login / Register
             </Button>
-          </div> */}
+          </div>
           <Dialog open={login} onClose={() => setLogin(false)}></Dialog>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}></StyledFirebaseAuth>
         </Container>
