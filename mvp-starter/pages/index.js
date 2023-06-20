@@ -8,6 +8,7 @@ import { auth, firestore } from '../firebase/firebase';
 import styles from '../styles/landing.module.scss';
 import { useAuth } from '../firebase/auth';
 import Layout from '../components/Layout';
+import { setDoc, addDoc, getDocs } from 'firebase/firestore';
 
 const REDIRECT_PAGE = '/dashboard';
 
@@ -46,25 +47,32 @@ export default function Home() {
     try {
       // Create user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("User signed up:", userCredential);
 
       // Get the user's unique ID
       const userId = userCredential.user.uid;
+      console.log("User ID:", userId);
 
       // Create a new user document in Firestore
       const userRef = firestore.collection('users').doc(userId);
       const userData = {
         email: userCredential.user.email,
-        flashcards: [],
+        favoriteFlashcards: [],
       };
-      await userRef.set(userData);
+      await userRef.setDoc(userData);
+      console.log('New user data:', userData);
 
       // Redirect to the dashboard or perform other actions
       // router.push('/dashboard');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 8000);
     } catch (error) {
       console.error('Error signing up:', error);
       // Handle the error
     }
   };
+
 
   // Function to sign in with Google
   const signInWithGoogle = async () => {
@@ -74,6 +82,7 @@ export default function Home() {
 
       // Sign in with Google using a pop-up window
       const userCredential = await signInWithPopup(auth, provider);
+      console.log("USER CREDENTIALS", userCredential);
 
       // Get the user's unique ID
       const userId = userCredential.user.uid;
@@ -88,14 +97,17 @@ export default function Home() {
           email: userCredential.user.email,
           favoriteFlashcards: [],
         };
-        await userRef.set(userData);
+        await userRef.setDoc(userData);
 
         // Log the user data in the console (optional)
         console.log('New user data:', userData);
       }
 
       // Redirect to the dashboard or perform other actions
-      router.push('/dashboard');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 8000)
+      // router.push('/dashboard');
     } catch (error) {
       console.error('Error signing in with Google:', error);
       // Handle the error
