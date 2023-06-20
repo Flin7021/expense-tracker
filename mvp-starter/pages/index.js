@@ -1,29 +1,13 @@
-/**
- * @license
- * Copyright 2022 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
+import { EmailAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { Button, CircularProgress, Container, Dialog, Typography } from '@mui/material';
-import { auth } from '../firebase/firebase';
+import { auth, firestore } from '../firebase/firebase';
 import styles from '../styles/landing.module.scss';
 import { useAuth } from '../firebase/auth';
+import Layout from '../components/Layout';
 
 const REDIRECT_PAGE = '/dashboard';
 
@@ -58,25 +42,99 @@ export default function Home() {
     );
   }
 
+  // Function to create a new user with email and password
+  const signUpWithEmailAndPassword = async (email, password) => {
+    try {
+      // Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Get the user's unique ID
+      const userId = userCredential.user.uid;
+
+      // Create a new user document in Firestore
+      const userRef = firestore.collection('users').doc(userId);
+      const userData = {
+        email: userCredential.user.email,
+        favoriteFlashcards: [],
+      };
+      await userRef.set(userData);
+
+      // Log the user data in the console (optional)
+      console.log('New user data:', userData);
+
+      // Redirect to the dashboard or perform other actions
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error signing up:', error);
+      // Handle the error
+    }
+  };
+
+  // Function to sign in with Google
+  const signInWithGoogle = async () => {
+    try {
+      // Create a GoogleAuthProvider instance
+      const provider = new GoogleAuthProvider();
+
+      // Sign in with Google using a pop-up window
+      const userCredential = await signInWithPopup(auth, provider);
+
+      // Get the user's unique ID
+      const userId = userCredential.user.uid;
+
+      // Check if the user document already exists in Firestore
+      const userRef = firestore.collection('users').doc(userId);
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        // User document doesn't exist, create a new one
+        const userData = {
+          email: userCredential.user.email,
+          favoriteFlashcards: [],
+        };
+        await userRef.set(userData);
+
+        // Log the user data in the console (optional)
+        console.log('New user data:', userData);
+      }
+
+      // Redirect to the dashboard or perform other actions
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+      // Handle the error
+    }
+  };
+
   return (
+    <Layout>
     <div>
       <Head>
-        <title>Expense Tracker</title>
+        <title>Welcome ABCs</title>
       </Head>
 
       <main>
         <Container className={styles.container}>
-          <Typography variant="h1">Welcome to Expense Tracker!</Typography>
-          <Typography variant="h2">Add, view, edit, and delete expenses</Typography>
+          <Typography variant="h1">Welcome to Learn Cantonese!</Typography>
+          <Typography variant="h2">View Your Flashcards</Typography>
           <div className={styles.buttons}>
             <Button variant="contained" color="secondary" onClick={() => setLogin(true)}>
               Login / Register
             </Button>
           </div>
           <Dialog open={login} onClose={() => setLogin(false)}></Dialog>
-          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}></StyledFirebaseAuth>
+          <StyledFirebaseAuth
+            uiConfig={uiConfig}
+            firebaseAuth={auth}
+            signInSuccessUrl={REDIRECT_PAGE}
+            callbacks={{
+              signInWithGoogle,
+              signInWithEmailAndPassword: signUpWithEmailAndPassword,
+            }}
+          ></StyledFirebaseAuth>
         </Container>
       </main>
     </div>
+    </Layout>
   );
 }

@@ -14,14 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {createContext, useContext, useState, useEffect} from 'react'
-import {auth} from './firebase'
-import { onAuthStateChanged as firebaseOnAuthStateChanged, signOut as authSignOut} from 'firebase/auth';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { auth, firestore } from './firebase';
+import {
+  onAuthStateChanged as firebaseOnAuthStateChanged,
+  signOut as authSignOut,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
 
 const AuthUserContext = createContext({
   authUser: null,
   isLoading: true,
-})
+  flashcards: [],
+});
 
 export default function useFireBaseAuth() {
   const [authUser, setAuthUser] = useState(null);
@@ -30,7 +35,7 @@ export default function useFireBaseAuth() {
   const clear = () => {
     setAuthUser(null);
     setIsLoading(false);
-  }
+  };
 
   const handleAuthStateChanged = async (user) => {
     setIsLoading(true);
@@ -41,28 +46,53 @@ export default function useFireBaseAuth() {
     setAuthUser({
       uid: user.uid,
       email: user.email,
+      flashcards: [],
     });
     setIsLoading(false);
   };
 
   const signOut = () => authSignOut(auth).then(clear);
 
+  const signUpWithEmailAndPassword = async (email, password) => {
+    try {
+      // Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Get the user's unique ID
+      const userId = userCredential.user.uid;
+
+      // Create a new user document in Firestore
+      const userRef = firestore.collection('users').doc(userId);
+      const userData = {
+        email: userCredential.user.email,
+        flashcards: [],
+      };
+      await userRef.set(userData);
+
+      // Redirect to the dashboard or perform other actions
+      // router.push('/dashboard');
+    } catch (error) {
+      console.error('Error signing up:', error);
+      // Handle the error
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = firebaseOnAuthStateChanged(auth, handleAuthStateChanged);
     return () => unsubscribe();
-  }, [])
+  }, []);
 
   return {
     authUser,
     isLoading,
-    signOut
-  }
+    signOut,
+    signUpWithEmailAndPassword,
+  };
 }
 
-
-export function AuthUserProvider({children}) {
+export function AuthUserProvider({ children }) {
   const auth = useFireBaseAuth();
-  return <AuthUserContext.Provider value={auth}>{children}</AuthUserContext.Provider>
+  return <AuthUserContext.Provider value={auth}>{children}</AuthUserContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthUserContext);
