@@ -18,27 +18,45 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 import { Button, CircularProgress, Container, Dialog, Typography } from '@mui/material';
 import { auth } from '../firebase/firebase';
 import styles from '../styles/landing.module.scss';
+import { useAuth } from '../firebase/auth';
 
-const REDIRECT_PAGE = '/dashboard'
+const REDIRECT_PAGE = '/dashboard';
 
-//configure FirebaseUI
+// Configure FirebaseUI
 const uiConfig = {
   signInFlow: 'popup',
   signInSuccessUrl: REDIRECT_PAGE,
-  SignInOptions: [
+  signInOptions: [
     EmailAuthProvider.PROVIDER_ID,
     GoogleAuthProvider.PROVIDER_ID,
-  ]
-}
+  ],
+};
 
 export default function Home() {
+  const { authUser, isLoading } = useAuth();
   const router = useRouter();
-  const [login, setLogin] = useState(false)
+  const [login, setLogin] = useState(false);
+
+  // Redirect if finished loading and there's an existing user (user is logged in)
+  useEffect(() => {
+    if (!isLoading && authUser && router.pathname !== '/dashboard') {
+      router.push('/dashboard');
+    }
+  }, [authUser, isLoading, router]);
+
+  if (isLoading || authUser) {
+    return (
+      <CircularProgress
+        color="inherit"
+        sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+      />
+    );
+  }
 
   return (
     <div>
@@ -51,15 +69,14 @@ export default function Home() {
           <Typography variant="h1">Welcome to Expense Tracker!</Typography>
           <Typography variant="h2">Add, view, edit, and delete expenses</Typography>
           <div className={styles.buttons}>
-            <Button variant="contained" color="secondary"
-            onClick={() => setLogin(true)}>
+            <Button variant="contained" color="secondary" onClick={() => setLogin(true)}>
               Login / Register
             </Button>
           </div>
-          <Dialog open={login} onClose={(() => setLogin(false))}
-          ></Dialog>
+          <Dialog open={login} onClose={() => setLogin(false)}></Dialog>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth}></StyledFirebaseAuth>
         </Container>
       </main>
-    </div>);
+    </div>
+  );
 }

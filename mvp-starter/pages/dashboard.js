@@ -59,7 +59,7 @@ export default function Dashboard() {
   const { authUser, isLoading } = useAuth();
   const router = useRouter();
   const [action, setAction] = useState(RECEIPTS_ENUM.none);
-  
+
   // State involved in loading, setting, deleting, and updating receipts
   const [isLoadingReceipts, setIsLoadingReceipts] = useState(true);
   const [deleteReceiptId, setDeleteReceiptId] = useState("");
@@ -80,6 +80,9 @@ export default function Dashboard() {
 
   // Listen to changes for loading and authUser, redirect if needed
   useEffect(() => {
+    if(!isLoading && !authUser) {
+      router.push('/');
+    }
   }, [authUser, isLoading]);
 
   // For all of the onClick functions, update the action and fields for updating
@@ -106,7 +109,15 @@ export default function Dashboard() {
   }
 
   return (
+    <>
+    {!authUser && (
+      <CircularProgress
+        color="inherit"
+        sx={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+      />
+    )}
     <div>
+
       <Head>
         <title>Expense Tracker</title>
       </Head>
@@ -151,5 +162,10 @@ export default function Dashboard() {
         </DialogActions>
       </Dialog>
     </div>
+    </>
   )
 }
+
+
+// (!authUser) ?
+//   <CircularProgress color="inherit" sx={{marginLeft: '50%', marginTop:'25%'}}/>
