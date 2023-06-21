@@ -1,19 +1,25 @@
 import AllFlashcards from '../components/AllFlashcards';
 import Layout from '../components/Layout';
 import styles from '../styles/flashcards.module.scss';
-import Link from 'next/link'; // Import Link component
-
+import { useRouter } from 'next/router';
 
 export default function FlashcardsPage() {
+  const router = useRouter();
+
+  const handleDashboardLinkClick = async () => {
+    await router.push('/dashboard'); // Navigate to dashboard page
+    router.reload(); // Reload the dashboard page
+  };
+
   return (
     <Layout>
-    <Link href="/dashboard">Go to Dashboard And Review!</Link> {/* Add the link to /flashcards */}
-    <div className={styles.flashcardsPage}>
-      <h1 className={styles.pageTitle}>Flashcards</h1>
-      <div className={styles.flashcardsContainer}>
-        <AllFlashcards />
+      <div className={styles.flashcardsPage}>
+        <h1 className={styles.pageTitle}>Flashcards</h1>
+        <button onClick={handleDashboardLinkClick}>Go to Dashboard And Review!</button>
+        <div className={styles.flashcardsContainer}>
+          <AllFlashcards />
+        </div>
       </div>
-    </div>
     </Layout>
   );
 }
