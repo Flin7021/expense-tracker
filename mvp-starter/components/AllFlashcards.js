@@ -36,8 +36,10 @@
 //     </div>
 //   );
 // }
+
+
 import { useEffect, useState } from 'react';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 import { useAuth } from '../firebase/auth';
 
@@ -66,13 +68,20 @@ export default function AllFlashcards() {
   const handleFavoriteClick = async (flashcardId) => {
     try {
       const userRef = doc(firestore, 'users', authUser.uid);
-      await updateDoc(userRef, {
-        flashcards: [...authUser.flashcards, flashcardId],
-      });
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const favoriteFlashcards = userData.favoriteFlashcards || [];
+        const updatedFavoriteFlashcards = [...favoriteFlashcards, flashcardId];
+        await updateDoc(userRef, {
+          favoriteFlashcards: updatedFavoriteFlashcards,
+        });
+      }
     } catch (error) {
       console.error('Error adding flashcard to favorites: ', error);
     }
   };
+
 
   return (
     <div>
@@ -88,3 +97,4 @@ export default function AllFlashcards() {
     </div>
   );
 }
+

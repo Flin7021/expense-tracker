@@ -5,6 +5,7 @@ import { firestore } from '../firebase/firebase';
 import { useAuth } from '../firebase/auth';
 import CircularProgress from '@mui/material/CircularProgress';
 import Layout from '../components/Layout';
+import FavoriteFlashcard from '../components/FavoriteFlashcard';
 
 export default function Dashboard() {
   const { authUser, isLoading } = useAuth();
@@ -24,7 +25,11 @@ export default function Dashboard() {
         (snapshot) => {
           const flashcards = snapshot.docs.map((doc) => ({
             id: doc.id,
-            ...doc.data(),
+            phrase: doc.data().phrase,
+            translation: doc.data().translation,
+            category: doc.data().category,
+            jyutPing: doc.data().jyutPing,
+            // Add other necessary fields from the flashcards collection
           }));
           setFavoriteFlashcards(flashcards);
         }
@@ -45,13 +50,17 @@ export default function Dashboard() {
 
   return (
     <Layout>
-    <div>
-      <h1>Welcome to Your Dashboard</h1>
-      <h2>Your Favorite Flashcards:</h2>
-      {favoriteFlashcards.map((flashcard) => (
-        <Flashcard key={flashcard.id} flashcard={flashcard} />
-      ))}
-    </div>
+      <div>
+        <h1>Welcome to Your Dashboard</h1>
+        <h2>Your Favorite Flashcards:</h2>
+        {favoriteFlashcards.length > 0 ? (
+          favoriteFlashcards.map((flashcard) => (
+            <FavoriteFlashcard key={flashcard.id} flashcard={flashcard} />
+          ))
+        ) : (
+          <p>No favorite flashcards found.</p>
+        )}
+      </div>
     </Layout>
   );
 }
