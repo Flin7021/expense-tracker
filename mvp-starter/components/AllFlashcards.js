@@ -64,6 +64,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 import { useAuth } from '../firebase/auth';
+import styles from '../styles/flashcards.module.scss'; // Import additional styles
 
 export default function AllFlashcards() {
   const { authUser } = useAuth();
@@ -115,7 +116,6 @@ export default function AllFlashcards() {
   };
 
 
-
   return (
     <div>
       <div>
@@ -127,15 +127,18 @@ export default function AllFlashcards() {
           {/* Add more options for different categories */}
         </select>
       </div>
-      {filteredFlashcards.map((flashcard) => (
-        <div key={flashcard.id}>
-          <h3>Phrase: {flashcard.phrase}</h3>
-          <p>Translation: {flashcard.translation}</p>
-          <p>Category: {flashcard.category}</p>
-          <p>Jyut Ping: {flashcard.jyutPing}</p>
-          <button onClick={() => handleFavoriteClick(flashcard.id)}>Add to Favorites</button>
-        </div>
-      ))}
+      <div className={styles.flashcardsContainer}>
+        {filteredFlashcards.map((flashcard) => (
+          <div key={flashcard.id} className={styles.flashcard}>
+            <h3>Phrase: {flashcard.phrase}</h3>
+            <p>Translation: {flashcard.translation}</p>
+            <p>Category: {flashcard.category}</p>
+            <p>Jyut Ping: {flashcard.jyutPing}</p>
+            <button onClick={() => handleFavoriteClick(flashcard.id)}>Add to Favorites</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+        }
+

@@ -14,9 +14,13 @@ export default function FlashcardsPage() {
   return (
     <Layout>
       <div className={styles.flashcardsPage}>
+      <div className={styles.titleContainer}>
         <h1 className={styles.pageTitle}>Flashcards</h1>
-        <button onClick={handleDashboardLinkClick}>Go to Dashboard And Review!</button>
-        <div className={styles.flashcardsContainer}>
+        <div className={styles.dashboardContainer}>
+        <button className={styles.dashboardButton} onClick={handleDashboardLinkClick}>Go to Dashboard And Review!</button>
+        </div>
+        </div>
+        <div >
           <AllFlashcards />
         </div>
       </div>

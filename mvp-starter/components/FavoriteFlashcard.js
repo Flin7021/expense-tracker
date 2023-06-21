@@ -1,8 +1,9 @@
 import React from 'react';
+import styles from '../styles/flashcards.module.scss'
 
 const FavoriteFlashcard = ({ flashcard }) => {
   return (
-    <div>
+    <div className={styles.flashcard}>
       <h3>Phrase: {flashcard.phrase}</h3>
       <p>Translation: {flashcard.translation}</p>
       <p>Category: {flashcard.category}</p>

@@ -2,6 +2,12 @@
     padding: 20px;
   }
 
+  .titleContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .pageTitle {
     font-size: 24px;
     margin-bottom: 16px;
@@ -9,8 +15,8 @@
 
   .flashcardsContainer {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as desired */
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 16px;
   }
 
   /* Additional styles for individual flashcards */
@@ -19,4 +25,28 @@
     background-color: #f2f2f2;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboardContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .dashboardButton {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1a73e8;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+
+    /* Add hover effect */
+    &:hover {
+      background-color: #0f59c9;
+    }
   }

@@ -7,6 +7,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Layout from '../components/Layout';
 import FavoriteFlashcard from '../components/FavoriteFlashcard';
 import Link from 'next/link'; // Import Link component
+// import styles from '../styles/flashcards.module.scss'; // Import additional styles
+import styles from '../styles/dashboard.module.scss'
+
 
 export default function Dashboard() {
   const { authUser, isLoading } = useAuth();
@@ -63,14 +66,15 @@ export default function Dashboard() {
         <h1>Welcome to Your Dashboard</h1>
         <Link href="/flashcards">Go to Flashcards</Link> {/* Add the link to /flashcards */}
         <h2>Your Favorite Flashcards:</h2>
-
+        <div className={styles.flashcardsContainer}>
         {favoriteFlashcards.length > 0 ? (
           favoriteFlashcards.map((flashcard) => (
-            <FavoriteFlashcard key={flashcard.id} flashcard={flashcard} />
+            <FavoriteFlashcard key={flashcard.id} flashcard={flashcard} className={styles.flashcard}/>
           ))
         ) : (
           <p>No favorite flashcards found.</p>
         )}
+      </div>
       </div>
     </Layout>
   );

@@ -1,10 +1,43 @@
-@import "variables.module";
-
-.addButton {
-  stroke: $secondary;
-  stroke-width: 2;
+.dashboardContainer {
+  padding: 20px;
 }
 
-.title {
-  padding: 1em 1em 0;
+.pageTitle {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.flashcardsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 16px;
+}
+
+.flashcard {
+  padding: 12px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dashboardButton {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #1a73e8;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+
+  /* Add hover effect */
+  &:hover {
+    background-color: #0f59c9;
+  }
 }
