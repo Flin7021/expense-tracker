@@ -3,7 +3,7 @@ import {getAuth} from 'firebase/auth'
 import { getFirestore } from "firebase/firestore";
 
 
-// Your web app's Firebase configuration
+
 const firebaseConfig = {
   apiKey: "AIzaSyAMtgkuIWKp8XPwIN8Ao-ItFGietdW6pBs",
   authDomain: "learn-cantonese-5b2c2.firebaseapp.com",

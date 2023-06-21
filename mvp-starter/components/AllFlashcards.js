@@ -1,10 +1,12 @@
 
-
 import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 import { useAuth } from '../firebase/auth';
-import styles from '../styles/flashcards.module.scss'; // Import additional styles
+import { IconButton, Dialog, DialogTitle, DialogContent, Button } from '@mui/material';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import styles from '../styles/flashcards.module.scss';
 
 export default function AllFlashcards() {
   const { authUser } = useAuth();
@@ -35,8 +37,8 @@ export default function AllFlashcards() {
   };
 
   const filteredFlashcards = selectedCategory
-  ? flashcards.filter((flashcard) => flashcard.category === selectedCategory)
-  : flashcards;
+    ? flashcards.filter((flashcard) => flashcard.category === selectedCategory)
+    : flashcards;
 
   const handleFavoriteClick = async (flashcardId) => {
     try {
@@ -59,6 +61,9 @@ export default function AllFlashcards() {
     }
   };
 
+  const handleCloseNotification = () => {
+    setShowAlreadyAddedNotification(false);
+  };
 
   return (
     <div>
@@ -74,20 +79,27 @@ export default function AllFlashcards() {
         </select>
       </div>
       <div className={styles.flashcardsContainer}>
-      {filteredFlashcards.map((flashcard) => (
-  <div key={flashcard.id} className={styles.flashcard}>
-    <h3>Phrase: {flashcard.phrase}</h3>
-    <p>Translation: {flashcard.translation}</p>
-    <p>Category: {flashcard.category}</p>
-    <p>Jyut Ping: {flashcard.jyutPing}</p>
-    <button onClick={() => handleFavoriteClick(flashcard.id)}>Add to Favorites</button>
-  </div>
-))}
-
+        {filteredFlashcards.map((flashcard) => (
+          <div key={flashcard.id} className={styles.flashcard}>
+            <h3>Phrase: {flashcard.phrase}</h3>
+            <p>Translation: {flashcard.translation}</p>
+            <p>Category: {flashcard.category}</p>
+            <p>Jyut Ping: {flashcard.jyutPing}</p>
+            <IconButton onClick={() => handleFavoriteClick(flashcard.id)}>
+              <FavoriteIcon />
+            </IconButton>
+          </div>
+        ))}
       </div>
-      {showAlreadyAddedNotification && (
-        <div className={styles.notification}>Flashcard already added to favorites</div>
-      )}
+      <Dialog open={showAlreadyAddedNotification} onClose={handleCloseNotification}>
+        <DialogTitle>You already added this to your study deck 🤓</DialogTitle>
+        <DialogContent>
+          <IconButton onClick={handleCloseNotification} autoFocus>
+          <ThumbUpIcon />
+          </IconButton>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+

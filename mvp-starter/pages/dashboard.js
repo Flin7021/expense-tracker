@@ -6,7 +6,7 @@ import { useAuth } from '../firebase/auth';
 import CircularProgress from '@mui/material/CircularProgress';
 import Layout from '../components/Layout';
 import FavoriteFlashcard from '../components/FavoriteFlashcard';
-import Link from 'next/link'; 
+import Link from 'next/link';
 import styles from '../styles/dashboard.module.scss'
 
 
@@ -85,7 +85,7 @@ export default function Dashboard() {
     <Layout>
       <div>
         <h1>Welcome to Your Dashboard</h1>
-        <Link href="/flashcards">Go to Flashcards</Link> {/* Add the link to /flashcards */}
+        <Link href="/flashcards">Go to Flashcards</Link> 
         <h2>Your Favorite Flashcards:</h2>
         <div className={styles.flashcardsContainer}>
         {favoriteFlashcards.length > 0 ? (
