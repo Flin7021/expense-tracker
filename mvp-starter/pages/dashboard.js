@@ -60,6 +60,7 @@ export default function Dashboard() {
     <Layout>
       <div>
         <h1>Welcome to Your Dashboard</h1>
+        <Link href="/flashcards">Go to Flashcards</Link>
         <h2>Your Favorite Flashcards:</h2>
         {favoriteFlashcards.length > 0 ? (
           favoriteFlashcards.map((flashcard) => (
