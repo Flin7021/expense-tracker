@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, where, query, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, where, query, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { firestore } from '../firebase/firebase';
 import { useAuth } from '../firebase/auth';
@@ -20,21 +20,30 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (authUser) {
-      const unsubscribe = onSnapshot(
-        query(collection(firestore, 'flashcards'), where('favorites', 'array-contains', authUser.uid)),
-        (snapshot) => {
-          const flashcards = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            phrase: doc.data().phrase,
-            translation: doc.data().translation,
-            category: doc.data().category,
-            jyutPing: doc.data().jyutPing,
-          }));
-          setFavoriteFlashcards(flashcards);
-        }
-      );
+      const fetchFavoriteFlashcards = async () => {
+        try {
+          const flashcardsCollection = collection(firestore, 'flashcards');
 
-      return () => unsubscribe();
+          const flashcards = await Promise.all(
+            authUser.favoriteFlashcards.map(async (flashcardId) => {
+              const flashcardDoc = await getDoc(doc(flashcardsCollection, flashcardId));
+              if (flashcardDoc.exists()) {
+                const flashcardData = flashcardDoc.data();
+                return {
+                  id: flashcardDoc.id,
+                  ...flashcardData,
+                };
+              }
+            })
+          );
+
+          setFavoriteFlashcards(flashcards.filter(Boolean));
+        } catch (error) {
+          console.error('Error fetching favorite flashcards: ', error);
+        }
+      };
+
+      fetchFavoriteFlashcards();
     }
   }, [authUser]);
 

@@ -22,28 +22,6 @@ export default function useFireBaseAuth() {
     setIsLoading(false);
   };
 
-  // const handleAuthStateChanged = async (user) => {
-  //   setIsLoading(true);
-  //   if (!user) {
-  //     clear();
-  //     return;
-  //   }
-
-  //   const userRef = doc(collection(firestore, 'users'), user.uid);
-
-  //   // Update the user data in the Firestore collection
-  //   await setDoc(userRef, {
-  //     email: user.email,
-  //     favoriteFlashcards: [],
-  //   });
-
-  //   setAuthUser({
-  //     uid: user.uid,
-  //     email: user.email,
-  //     favoriteFlashcards: [],
-  //   });
-  //   setIsLoading(false);
-  // };
 
   const handleAuthStateChanged = async (user) => {
     setIsLoading(true);
@@ -61,7 +39,7 @@ export default function useFireBaseAuth() {
         setAuthUser({
           uid: user.uid,
           email: user.email,
-          favoriteFlashcards: userData.favoriteFlashcards || [], // Retrieve existing favoriteFlashcards, or use an empty array as a fallback
+          favoriteFlashcards: userData.favoriteFlashcards || [], 
         });
       } else {
         // User document doesn't exist, create a new one
