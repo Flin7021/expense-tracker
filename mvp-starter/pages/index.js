@@ -125,11 +125,6 @@ export default function Home() {
         <Container className={styles.container}>
           <Typography variant="h1">Welcome to Learn Cantonese!</Typography>
           <Typography variant="h2">View Your Flashcards</Typography>
-          <div className={styles.buttons}>
-            <Button variant="contained" color="secondary" onClick={() => setLogin(true)}>
-              Login / Register
-            </Button>
-          </div>
           <Dialog open={login} onClose={() => setLogin(false)}></Dialog>
           <StyledFirebaseAuth
             uiConfig={uiConfig}
