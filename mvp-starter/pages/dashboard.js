@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, where, query, onSnapshot, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, where, query, onSnapshot, doc, getDoc, deleteDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { firestore } from '../firebase/firebase';
 import { useAuth } from '../firebase/auth';
 import CircularProgress from '@mui/material/CircularProgress';
 import Layout from '../components/Layout';
 import FavoriteFlashcard from '../components/FavoriteFlashcard';
-import Link from 'next/link'; // Import Link component
-// import styles from '../styles/flashcards.module.scss'; // Import additional styles
+import Link from 'next/link'; 
 import styles from '../styles/dashboard.module.scss'
 
 
@@ -60,6 +59,28 @@ export default function Dashboard() {
     );
   }
 
+
+  const handleDelete = async (flashcardId) => {
+    try {
+      // Create a reference to the user's document
+      const userDocRef = doc(firestore, 'users', authUser.uid);
+
+      // Remove the flashcard ID from the favoriteFlashcards array
+      await updateDoc(userDocRef, {
+        favoriteFlashcards: arrayRemove(flashcardId)
+      });
+
+      // Update the favoriteFlashcards state by filtering out the deleted flashcard
+      setFavoriteFlashcards((prevFlashcards) =>
+        prevFlashcards.filter((flashcard) => flashcard.id !== flashcardId)
+      );
+    } catch (error) {
+      console.error('Error deleting flashcard: ', error);
+    }
+  };
+
+
+
   return (
     <Layout>
       <div>
@@ -69,7 +90,7 @@ export default function Dashboard() {
         <div className={styles.flashcardsContainer}>
         {favoriteFlashcards.length > 0 ? (
           favoriteFlashcards.map((flashcard) => (
-            <FavoriteFlashcard key={flashcard.id} flashcard={flashcard} className={styles.flashcard}/>
+            <FavoriteFlashcard key={flashcard.id} flashcard={flashcard} onDelete={handleDelete} className={styles.flashcard}/>
           ))
         ) : (
           <p>No favorite flashcards found.</p>

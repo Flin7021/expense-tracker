@@ -1,64 +1,4 @@
-// import { useEffect, useState } from 'react';
-// import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
-// import { firestore } from '../firebase/firebase';
-// import { useAuth } from '../firebase/auth';
 
-// export default function AllFlashcards() {
-//   const { authUser } = useAuth();
-//   const [flashcards, setFlashcards] = useState([]);
-
-//   useEffect(() => {
-//     console.log(authUser);
-
-//     const fetchFlashcards = async () => {
-//       try {
-//         const flashcardsCollection = collection(firestore, 'flashcards');
-//         const flashcardsSnapshot = await getDocs(flashcardsCollection);
-//         const flashcardsData = flashcardsSnapshot.docs.map((doc) => ({
-//           id: doc.id,
-//           ...doc.data(),
-//         }));
-//         setFlashcards(flashcardsData);
-//       } catch (error) {
-//         console.error('Error fetching flashcards: ', error);
-//       }
-//     };
-
-//     fetchFlashcards();
-//   }, []);
-
-//   const handleFavoriteClick = async (flashcardId) => {
-//     try {
-//       const userRef = doc(firestore, 'users', authUser.uid);
-//       const userDoc = await getDoc(userRef);
-//       if (userDoc.exists()) {
-//         const userData = userDoc.data();
-//         const favoriteFlashcards = userData.favoriteFlashcards || [];
-//         const updatedFavoriteFlashcards = [...favoriteFlashcards, flashcardId];
-//         await updateDoc(userRef, {
-//           favoriteFlashcards: updatedFavoriteFlashcards,
-//         });
-//       }
-//     } catch (error) {
-//       console.error('Error adding flashcard to favorites: ', error);
-//     }
-//   };
-
-
-//   return (
-//     <div>
-//       {flashcards.map((flashcard) => (
-//         <div key={flashcard.id}>
-//           <h3>Phrase: {flashcard.phrase}</h3>
-//           <p>Translation: {flashcard.translation}</p>
-//           <p>Category: {flashcard.category}</p>
-//           <p>Jyut Ping: {flashcard.jyutPing}</p>
-//           <button onClick={() => handleFavoriteClick(flashcard.id)}>Add to Favorites</button>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }
 
 import { useEffect, useState } from 'react';
 import { collection, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
@@ -69,7 +9,8 @@ import styles from '../styles/flashcards.module.scss'; // Import additional styl
 export default function AllFlashcards() {
   const { authUser } = useAuth();
   const [flashcards, setFlashcards] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(''); // State for the selected category
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [showAlreadyAddedNotification, setShowAlreadyAddedNotification] = useState(false);
 
   useEffect(() => {
     const fetchFlashcards = async () => {
@@ -89,14 +30,13 @@ export default function AllFlashcards() {
     fetchFlashcards();
   }, []);
 
-    const handleCategoryChange = (event) => {
-    setSelectedCategory(event.target.value); // Update the selected category state
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
   };
 
-  // Filter flashcards based on the selected category
   const filteredFlashcards = selectedCategory
-    ? flashcards.filter((flashcard) => flashcard.category === selectedCategory)
-    : flashcards;
+  ? flashcards.filter((flashcard) => flashcard.category === selectedCategory)
+  : flashcards;
 
   const handleFavoriteClick = async (flashcardId) => {
     try {
@@ -105,6 +45,10 @@ export default function AllFlashcards() {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         const favoriteFlashcards = userData.favoriteFlashcards || [];
+        if (favoriteFlashcards.includes(flashcardId)) {
+          setShowAlreadyAddedNotification(true);
+          return;
+        }
         const updatedFavoriteFlashcards = [...favoriteFlashcards, flashcardId];
         await updateDoc(userRef, {
           favoriteFlashcards: updatedFavoriteFlashcards,
@@ -130,17 +74,20 @@ export default function AllFlashcards() {
         </select>
       </div>
       <div className={styles.flashcardsContainer}>
-        {filteredFlashcards.map((flashcard) => (
-          <div key={flashcard.id} className={styles.flashcard}>
-            <h3>Phrase: {flashcard.phrase}</h3>
-            <p>Translation: {flashcard.translation}</p>
-            <p>Category: {flashcard.category}</p>
-            <p>Jyut Ping: {flashcard.jyutPing}</p>
-            <button onClick={() => handleFavoriteClick(flashcard.id)}>Add to Favorites</button>
-          </div>
-        ))}
+      {filteredFlashcards.map((flashcard) => (
+  <div key={flashcard.id} className={styles.flashcard}>
+    <h3>Phrase: {flashcard.phrase}</h3>
+    <p>Translation: {flashcard.translation}</p>
+    <p>Category: {flashcard.category}</p>
+    <p>Jyut Ping: {flashcard.jyutPing}</p>
+    <button onClick={() => handleFavoriteClick(flashcard.id)}>Add to Favorites</button>
+  </div>
+))}
+
       </div>
+      {showAlreadyAddedNotification && (
+        <div className={styles.notification}>Flashcard already added to favorites</div>
+      )}
     </div>
   );
-        }
-
+}
