@@ -29,7 +29,6 @@ export default function Dashboard() {
             translation: doc.data().translation,
             category: doc.data().category,
             jyutPing: doc.data().jyutPing,
-            // Add other necessary fields from the flashcards collection
           }));
           setFavoriteFlashcards(flashcards);
         }
