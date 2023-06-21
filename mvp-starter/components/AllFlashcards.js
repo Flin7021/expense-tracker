@@ -124,6 +124,8 @@ export default function AllFlashcards() {
           <option value="">All</option>
           <option value="Dim sum">Dim sum</option>
           <option value="Expressions">Expressions</option>
+          <option value="Animal">Animals</option>
+          <option value="Careers">Careers</option>
           {/* Add more options for different categories */}
         </select>
       </div>
