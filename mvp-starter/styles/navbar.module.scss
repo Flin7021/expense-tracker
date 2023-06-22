@@ -1,11 +1,23 @@
 @import "variables.module";
 
+// .container {
+//     display: flex;
+// }
+
+// .toolbar {
+//     align-self: center;
+//     width: 1200px;
+// }
+
 .container {
     display: flex;
-}
+    min-width: 500px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
 
-.toolbar {
+  .toolbar {
     align-self: center;
-    width: 1200px;
-}
-
+    width: 100%;
+  }
